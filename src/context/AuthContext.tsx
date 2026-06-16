@@ -80,21 +80,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+  async (event, session) => {
 
-      (async () => {
-        if (session?.user) {
-          const p = await createOrFetchProfile(session.user);
-          setProfile(p);
-          await ensureStreak(session.user.id);
-        } else {
-          setProfile(null);
-        }
-        if (event === 'INITIAL_SESSION') setLoading(false);
-      })();
-    });
+    console.log("AUTH EVENT:", event);
+    console.log("SESSION:", session);
+
+    setSession(session);
+    setUser(session?.user ?? null);
+
+    if (session?.user) {
+      const p = await createOrFetchProfile(session.user);
+      setProfile(p);
+      await ensureStreak(session.user.id);
+    } else {
+      setProfile(null);
+    }
+
+    setLoading(false);
+  }
+);
 
     return () => subscription.unsubscribe();
   }, []);
