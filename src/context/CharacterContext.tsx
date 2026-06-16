@@ -232,8 +232,14 @@ interface CharacterContextValue {
 
 const CharacterContext = createContext<CharacterContextValue | null>(null);
 
-export function CharacterProvider({ children }: { children: ReactNode }) {
-  const [characterId, setCharacterId] = useState<CharacterId>('piggy');
+export function CharacterProvider({
+  children,
+  initialCharacterId = 'piggy',
+}: {
+  children: ReactNode;
+  initialCharacterId?: CharacterId;
+}) {
+  const [characterId, setCharacterId] = useState<CharacterId>(initialCharacterId);
 
   const setCharacter = useCallback((id: CharacterId) => {
     setCharacterId(id);

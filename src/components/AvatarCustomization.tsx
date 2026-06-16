@@ -1,9 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Sparkles } from 'lucide-react';
 import { useCharacter, type CharacterId } from '../context/CharacterContext';
+import { useAuth } from '../context/AuthContext';
 
 export function AvatarCustomization() {
   const { character, setCharacter, allCharacters } = useCharacter();
+  const { updateProfile } = useAuth();
 
   return (
     <div className="p-5 h-full flex flex-col" style={{
@@ -58,7 +60,10 @@ export function AvatarCustomization() {
               transition={{ delay: idx * 0.05 }}
               whileHover={{ scale: 1.06, y: -2 }}
               whileTap={{ scale: 0.94 }}
-              onClick={() => setCharacter(char.id as CharacterId)}
+              onClick={() => {
+                setCharacter(char.id as CharacterId);
+                updateProfile({ companion_id: char.id });
+              }}
               className="flex flex-col items-center gap-1.5 p-2 rounded-2xl cursor-pointer border-2 transition-all duration-200"
               style={{
                 borderColor: isSelected ? character.accentFrom : 'transparent',
