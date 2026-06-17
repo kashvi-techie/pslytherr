@@ -3,7 +3,26 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    // Use PKCE flow instead of implicit flow.
+    // Implicit flow passes the token in the URL hash fragment which can be
+    // lost on certain hosting platforms (Vercel, Netlify) or when the page
+    // reloads before the JS listener processes it.
+    // PKCE flow passes a `code` query parameter and exchanges it server-side,
+    // which is far more reliable.
+    flowType: 'pkce',
+
+    // Auto-refresh tokens before they expire
+    autoRefreshToken: true,
+
+    // Detect session from URL on load — critical for OAuth redirects
+    detectSessionInUrl: true,
+
+    // Persist session in localStorage (default) so it survives reloads
+    persistSession: true,
+  },
+});
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
