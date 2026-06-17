@@ -4,9 +4,12 @@ import type { ActivityStats } from './useActivityTracker';
 
 /**
  * Saves focus sessions and mood stats to Supabase.
- * Called from Dashboard when a user is authenticated.
+ * Uses refs to read current stats so the interval isn't recreated on every change.
  */
 export function useFocusPersistence(userId: string | undefined, stats: ActivityStats) {
+  const statsRef = useRef(stats);
+  statsRef.current = stats;
+
   const sessionIdRef = useRef<string | null>(null);
   const sessionStartRef = useRef<string>(new Date().toISOString());
   const lastSaveRef = useRef<number>(Date.now());
@@ -16,54 +19,52 @@ export function useFocusPersistence(userId: string | undefined, stats: ActivityS
   useEffect(() => {
     if (!userId) return;
 
-    const SAVE_INTERVAL = 5 * 60 * 1000; // 5 minutes
+    const SAVE_INTERVAL = 5 * 60 * 1000;
 
     const interval = setInterval(async () => {
-      if (stats.sessionMinutes < 1) return;
+      const s = statsRef.current;
+      if (s.sessionMinutes < 1) return;
       const now = Date.now();
       if (now - lastSaveRef.current < SAVE_INTERVAL) return;
       lastSaveRef.current = now;
 
       try {
         if (!sessionIdRef.current) {
-          // Create new session record
           const { data } = await supabase
             .from('focus_sessions')
             .insert({
               user_id: userId,
-              duration_seconds: stats.sessionMinutes * 60,
-              keystrokes: stats.keystrokes,
-              mouse_moves: stats.mouseMoves,
-              focus_score: stats.focusScore,
-              mood: stats.mood,
+              duration_seconds: s.sessionMinutes * 60,
+              keystrokes: s.keystrokes,
+              mouse_moves: s.mouseMoves,
+              focus_score: s.focusScore,
+              mood: s.mood,
               started_at: sessionStartRef.current,
             })
             .select('id')
             .maybeSingle();
           if (data?.id) sessionIdRef.current = data.id;
         } else {
-          // Update existing session
           await supabase
             .from('focus_sessions')
             .update({
-              duration_seconds: stats.sessionMinutes * 60,
-              keystrokes: stats.keystrokes,
-              mouse_moves: stats.mouseMoves,
-              focus_score: stats.focusScore,
-              mood: stats.mood,
+              duration_seconds: s.sessionMinutes * 60,
+              keystrokes: s.keystrokes,
+              mouse_moves: s.mouseMoves,
+              focus_score: s.focusScore,
+              mood: s.mood,
             })
             .eq('id', sessionIdRef.current);
         }
 
-        // Update streak
-        await updateStreak(userId, stats.sessionMinutes);
+        await updateStreak(userId, s.sessionMinutes);
       } catch (e) {
         console.warn('Session save failed:', e);
       }
-    }, 60 * 1000); // Check every minute
+    }, 60 * 1000);
 
     return () => clearInterval(interval);
-  }, [userId, stats]);
+  }, [userId]);
 
   // Save mood stats once per day
   useEffect(() => {
@@ -106,11 +107,11 @@ async function updateStreak(userId: string, sessionMinutes: number) {
 
   let newStreak = existing.current_streak;
   if (lastActive === today) {
-    // Already counted today
+    // already counted
   } else if (lastActive === yesterday) {
     newStreak = existing.current_streak + 1;
   } else {
-    newStreak = 1; // Streak broken, restart
+    newStreak = 1;
   }
 
   const newLongest = Math.max(existing.longest_streak, newStreak);

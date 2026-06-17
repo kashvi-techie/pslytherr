@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Wifi, Zap } from 'lucide-react';
 import type { ActivityStats } from '../hooks/useActivityTracker';
 import { useCharacter } from '../context/CharacterContext';
+import { CharacterSticker } from './CharacterSticker';
 
 interface AvatarPlaygroundProps {
   stats: ActivityStats;
@@ -16,6 +17,7 @@ export function AvatarPlayground({ stats }: AvatarPlaygroundProps) {
 
   const [tipIndex, setTipIndex] = useState(0);
   const [bubbleKey, setBubbleKey] = useState(0);
+  const [mouseAngle, setMouseAngle] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => setTipIndex(i => (i + 1) % focusTips.length), 2000);
@@ -28,6 +30,18 @@ export function AvatarPlayground({ stats }: AvatarPlaygroundProps) {
       return () => clearInterval(t);
     }
   }, [stats.isTyping]);
+
+  // Mouse angle tracking for eye direction
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      // Center of the mascot area
+      const cx = window.innerWidth * 0.35;
+      const cy = window.innerHeight * 0.45;
+      setMouseAngle(Math.atan2(e.clientY - cy, e.clientX - cx));
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   const bubbles = character.hoverPhrases;
 
@@ -55,15 +69,15 @@ export function AvatarPlayground({ stats }: AvatarPlaygroundProps) {
             animate={{ opacity: [0, 1, 0], scale: [0, 1, 0], rotate: [0, 180, 360] }}
             transition={{ duration: 2.5, delay: i * 0.4, repeat: Infinity }}
           >
-            ✦
+            &#10022;
           </motion.div>
         ))}
       </div>
 
       {/* Neon sign */}
-      <div className="absolute top-6 left-8 z-10">
+      <div className="absolute top-4 left-4 sm:top-6 sm:left-8 z-10">
         <div
-          className="rounded-2xl p-3 text-center min-w-[90px]"
+          className="rounded-2xl p-2.5 sm:p-3 text-center min-w-[70px] sm:min-w-[90px]"
           style={{
             background: isDark ? 'rgba(0,0,0,0.8)' : 'rgba(50,30,80,0.85)',
             border: `1px solid ${character.accentFrom}66`,
@@ -78,7 +92,7 @@ export function AvatarPlayground({ stats }: AvatarPlaygroundProps) {
               className="font-black text-transparent bg-clip-text"
               style={{
                 backgroundImage: `linear-gradient(135deg, ${character.accentFrom}, ${character.accentTo})`,
-                fontSize: '13px',
+                fontSize: 'clamp(10px, 1.5vw, 13px)',
                 letterSpacing: '2px',
               }}
             >
@@ -95,7 +109,7 @@ export function AvatarPlayground({ stats }: AvatarPlaygroundProps) {
           initial={{ opacity: 0, scale: 0.85, y: 8 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.85, y: -8 }}
-          className="absolute top-6 right-8 z-10 rounded-2xl px-4 py-2.5 max-w-[180px]"
+          className="absolute top-4 right-4 sm:top-6 sm:right-8 z-10 rounded-2xl px-3 py-2 sm:px-4 sm:py-2.5 max-w-[140px] sm:max-w-[180px]"
           style={{
             background: isDark ? 'rgba(30,10,10,0.95)' : 'rgba(255,255,255,0.93)',
             border: `1px solid ${character.accentBorder}`,
@@ -103,78 +117,40 @@ export function AvatarPlayground({ stats }: AvatarPlaygroundProps) {
             borderBottomRightRadius: 4,
           }}
         >
-          <p className="text-xs font-semibold leading-snug" style={{ color: character.textPrimary }}>
+          <p className="text-[10px] sm:text-xs font-semibold leading-snug" style={{ color: character.textPrimary }}>
             {stats.isTyping
-              ? `${character.name} is typing too! 🚀`
+              ? `${character.name} is typing too!`
               : bubbles[bubbleKey % bubbles.length]}
           </p>
         </motion.div>
       </AnimatePresence>
 
-      {/* Avatar figure */}
+      {/* Full-body mascot character */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="relative flex flex-col items-center">
-          {/* Monitor */}
-          <div
-            className="absolute -top-4 w-28 h-20 rounded-xl border-2 flex items-center justify-center overflow-hidden"
-            style={{ background: isDark ? '#1a0505' : '#5b2d8c', borderColor: character.accentFrom + '80' }}
-          >
-            <div className="w-24 h-16 rounded-lg flex items-center justify-center overflow-hidden"
-              style={{ background: isDark ? '#2d0808' : '#f0e8ff' }}>
-              <motion.div
-                animate={{ opacity: stats.isTyping ? [1, 0.3, 1] : 1 }}
-                transition={{ duration: 0.4, repeat: stats.isTyping ? Infinity : 0 }}
-                className="text-center"
-              >
-                <p style={{ fontSize: 8, color: character.textMuted, margin: 0 }}>VibeBuddy AI</p>
-                <p style={{ fontSize: 10, fontWeight: 700, color: character.textPrimary, margin: 0 }}>
-                  {stats.isTyping ? '▋ coding...' : '> ready'}
-                </p>
-                {stats.isTyping && (
-                  <p style={{ fontSize: 7, color: '#22c55e', margin: 0 }}>● live sync</p>
-                )}
-              </motion.div>
-            </div>
-          </div>
-
-          {/* Character emoji */}
-          <motion.div
-            className="select-none"
-            style={{ fontSize: 80, marginTop: 72 }}
-            animate={
-              stats.isTyping
-                ? { y: [0, -6, -10, -6, 0], rotate: [0, -2, 2, -1, 0] }
-                : { y: [0, -7, 0], rotate: [-1, 1, -1] }
-            }
-            transition={
-              stats.isTyping
-                ? { duration: 0.45, repeat: Infinity }
-                : { duration: 3.5, repeat: Infinity, ease: 'easeInOut' }
-            }
-          >
-            {character.emoji}
-          </motion.div>
-
-          {/* Keyboard */}
-          <div className="flex gap-1 mt-1">
-            {[...Array(8)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="w-4 h-2.5 rounded-sm"
-                style={{ background: isDark ? '#3d0808' : '#cdc2e9' }}
-                animate={stats.isTyping
-                  ? { backgroundColor: [character.accentFrom + '80', character.accentTo + '80', character.accentFrom + '80'], scale: [1, 0.85, 1] }
-                  : {}}
-                transition={{ duration: 0.3, delay: i * 0.05, repeat: stats.isTyping ? Infinity : 0 }}
-              />
-            ))}
-          </div>
-        </div>
+        <motion.div
+          animate={
+            stats.isTyping
+              ? { y: [0, -6, -10, -6, 0], rotate: [0, -1.5, 1.5, -0.5, 0] }
+              : { y: [0, -7, 0], rotate: [0, 0.5, 0] }
+          }
+          transition={
+            stats.isTyping
+              ? { duration: 0.5, repeat: Infinity, ease: 'easeInOut' }
+              : { duration: 3.5, repeat: Infinity, ease: 'easeInOut' }
+          }
+        >
+          <CharacterSticker
+            characterId={character.id}
+            size={Math.min(220, Math.max(140, typeof window !== 'undefined' ? window.innerWidth * 0.18 : 180))}
+            mouseAngle={mouseAngle}
+            isTyping={stats.isTyping}
+          />
+        </motion.div>
       </div>
 
       {/* Live sync badge */}
-      <div className="absolute bottom-5 left-5 z-10">
-        <div className="flex items-center gap-2 rounded-full px-3 py-1.5 border"
+      <div className="absolute bottom-3 left-3 sm:bottom-5 sm:left-5 z-10">
+        <div className="flex items-center gap-2 rounded-full px-2.5 py-1.5 sm:px-3 sm:py-1.5 border"
           style={{ background: isDark ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.7)', borderColor: character.accentBorder, backdropFilter: 'blur(8px)' }}>
           <motion.div
             className="w-2 h-2 bg-green-400 rounded-full"
@@ -182,48 +158,45 @@ export function AvatarPlayground({ stats }: AvatarPlaygroundProps) {
             transition={{ duration: 1.5, repeat: Infinity }}
           />
           <Wifi size={11} style={{ color: character.textSecondary }} />
-          <span className="text-[11px] font-semibold" style={{ color: character.textPrimary }}>
-            Live Activity Sync
+          <span className="text-[10px] sm:text-[11px] font-semibold" style={{ color: character.textPrimary }}>
+            Live Sync
           </span>
         </div>
-        <p className="text-[9px] mt-1 ml-1" style={{ color: character.textMuted }}>
-          Capturing keystrokes, mouse moves & actions
-        </p>
       </div>
 
       {/* Today's stats */}
-      <div className="absolute bottom-5 right-5 z-10">
-        <div className="rounded-2xl px-4 py-3 border"
+      <div className="absolute bottom-3 right-3 sm:bottom-5 sm:right-5 z-10">
+        <div className="rounded-2xl px-3 py-2 sm:px-4 sm:py-3 border"
           style={{ background: isDark ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.7)', borderColor: character.accentBorder, backdropFilter: 'blur(8px)' }}>
-          <p className="text-[10px] font-semibold mb-2" style={{ color: character.textMuted }}>
+          <p className="text-[9px] sm:text-[10px] font-semibold mb-1.5 sm:mb-2" style={{ color: character.textMuted }}>
             Today's Stats
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <div className="flex items-center gap-1.5">
-              <span className="text-sm">⌨️</span>
+              <span className="text-xs sm:text-sm">&#9000;</span>
               <div>
-                <p className="text-xs font-bold" style={{ color: character.textPrimary }}>
+                <p className="text-[10px] sm:text-xs font-bold" style={{ color: character.textPrimary }}>
                   {stats.keystrokes.toLocaleString()}
                 </p>
-                <p className="text-[9px]" style={{ color: character.textMuted }}>Keystrokes</p>
+                <p className="text-[8px] sm:text-[9px]" style={{ color: character.textMuted }}>Keys</p>
               </div>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="text-sm">🖱️</span>
+              <span className="text-xs sm:text-sm">&#128433;</span>
               <div>
-                <p className="text-xs font-bold" style={{ color: character.textPrimary }}>
+                <p className="text-[10px] sm:text-xs font-bold" style={{ color: character.textPrimary }}>
                   {(stats.mouseMoves / 1000).toFixed(1)}K
                 </p>
-                <p className="text-[9px]" style={{ color: character.textMuted }}>Mouse</p>
+                <p className="text-[8px] sm:text-[9px]" style={{ color: character.textMuted }}>Mouse</p>
               </div>
             </div>
             <div className="flex items-center gap-1.5">
-              <Zap size={13} style={{ color: character.accentFrom }} />
+              <Zap size={11} style={{ color: character.accentFrom }} />
               <div>
-                <p className="text-xs font-bold" style={{ color: character.textPrimary }}>
+                <p className="text-[10px] sm:text-xs font-bold" style={{ color: character.textPrimary }}>
                   {stats.focusScore}%
                 </p>
-                <p className="text-[9px]" style={{ color: character.textMuted }}>Focus</p>
+                <p className="text-[8px] sm:text-[9px]" style={{ color: character.textMuted }}>Focus</p>
               </div>
             </div>
           </div>

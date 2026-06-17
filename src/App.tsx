@@ -15,7 +15,15 @@ function LoadingScreen() {
         transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
         style={{ fontSize: 64, marginBottom: 20 }}
       >
-        🐷
+        <svg width="64" height="64" viewBox="0 0 200 215">
+          <circle cx="113" cy="75" r="46" fill="#f7c5d5" stroke="#e89ab0" strokeWidth="2.5" />
+          <ellipse cx="94" cy="68" rx="12" ry="14" fill="white" />
+          <ellipse cx="132" cy="68" rx="12" ry="14" fill="white" />
+          <circle cx="96" cy="68" r="5" fill="#2d1a1a" />
+          <circle cx="134" cy="68" r="5" fill="#2d1a1a" />
+          <ellipse cx="113" cy="90" rx="14" ry="10" fill="#f9b8cc" />
+          <path d="M 106 100 Q 113 106 120 100" fill="none" stroke="#d080a0" strokeWidth="2" strokeLinecap="round" />
+        </svg>
       </motion.div>
       <p className="text-sm font-semibold" style={{ color: '#8e7dbe' }}>
         Loading VibeBuddy...
@@ -35,7 +43,6 @@ function LoadingScreen() {
   );
 }
 
-// Inner app — must be inside CharacterProvider
 function ThemedApp() {
   const { character } = useCharacter();
   return (
@@ -54,45 +61,34 @@ function ThemedApp() {
   );
 }
 
-// Route guard — reads auth, shows AuthPage or the protected app
 function ProtectedApp() {
   const { user, profile, loading } = useAuth();
 
+  // Wait until auth state is resolved
   if (loading) return <LoadingScreen />;
 
+  // No user = show sign-in
   if (!user) {
     return (
-      <AnimatePresence mode="wait">
-        <motion.div
-          key="auth-page"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <AuthPage />
-        </motion.div>
-      </AnimatePresence>
+      <motion.div
+        key="auth-page"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <AuthPage />
+      </motion.div>
     );
   }
 
+  // User is authenticated — show dashboard even if profile hasn't loaded yet.
+  // Profile may be null briefly after OAuth redirect; it'll populate async.
   const companionId = (profile?.companion_id ?? 'piggy') as CharacterId;
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key="dashboard"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
-        className="contents"
-      >
-        <CharacterProvider initialCharacterId={companionId}>
-          <ThemedApp />
-        </CharacterProvider>
-      </motion.div>
-    </AnimatePresence>
+    <CharacterProvider initialCharacterId={companionId}>
+      <ThemedApp />
+    </CharacterProvider>
   );
 }
 

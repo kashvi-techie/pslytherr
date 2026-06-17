@@ -148,3 +148,22 @@ body {
   border-radius: 50%;
   transition: transform 0.1s ease-out;
 }
+
+/* ─── Mascot Blink Animation ─────────────────────────────────────────────── */
+/* Eyelid ellipses start at ry=0 (invisible) and grow to cover the eye, then retract */
+@keyframes blink {
+  0%, 92%, 100% { ry: 0; }
+  95%, 97% { ry: 16; }
+}
+@keyframes blink-spidey {
+  0%, 92%, 100% { ry: 0; }
+  95%, 97% { ry: 15; }
+}
+.blink-lid {
+  animation: blink 4s ease-in-out infinite;
+  transform-origin: center;
+}
+.blink-lid-spidey {
+  animation: blink-spidey 4s ease-in-out infinite;
+  transform-origin: center;
+}
