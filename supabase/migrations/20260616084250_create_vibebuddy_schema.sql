@@ -1,5 +1,5 @@
 /*
-# VibeBuddy Core Schema
+# Pslyther Core Schema
 
 ## Overview
 Creates the core multi-user schema for VibeBuddy — all data is scoped per authenticated user via RLS.
