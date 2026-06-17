@@ -51,7 +51,7 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
           </div>
           <div>
             <p className="font-bold text-base leading-tight" style={{ color: character.textPrimary }}>
-              VibeBuddy
+              Pslyther
             </p>
             <p className="text-[10px] font-medium" style={{ color: character.textMuted }}>
               AI Workspace ✨
@@ -136,7 +136,7 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-semibold truncate" style={{ color: character.textPrimary }}>
-              Kashvi Pundir
+              
             </p>
             <p className="text-[10px]" style={{ color: character.textMuted }}>Premium User 👑</p>
           </div>
@@ -144,7 +144,7 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
 
         <div className="text-center">
           <p className="text-[9px] font-medium" style={{ color: character.textMuted }}>
-            VibeBuddy v1.0.0
+            Pslyther v1.0.0
           </p>
         </div>
       </div>

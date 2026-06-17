@@ -2,7 +2,7 @@
 # Pslyther Core Schema
 
 ## Overview
-Creates the core multi-user schema for VibeBuddy — all data is scoped per authenticated user via RLS.
+Creates the core multi-user schema for Pslyther — all data is scoped per authenticated user via RLS.
 
 ## New Tables
 
