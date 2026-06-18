@@ -26,7 +26,7 @@ function LoadingScreen() {
         </svg>
       </motion.div>
       <p className="text-sm font-semibold" style={{ color: '#8e7dbe' }}>
-        Loading Pslyther...
+        Loading VibeBuddy...
       </p>
       <div className="flex gap-1.5 mt-4">
         {[0, 1, 2].map(i => (

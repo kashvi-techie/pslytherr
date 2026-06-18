@@ -262,7 +262,7 @@ export function Dashboard() {
       >
         <div className="flex items-center gap-2">
           <span>{character.emoji}</span>
-          <span className="font-bold" style={{ color: character.textPrimary }}>Pslyther AI</span>
+          <span className="font-bold" style={{ color: character.textPrimary }}>VibeBuddy AI</span>
         </div>
 
         {/* Desktop coming soon */}

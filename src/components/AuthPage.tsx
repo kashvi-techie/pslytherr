@@ -63,7 +63,7 @@ export function AuthPage() {
               🐷
             </motion.div>
             <h1 className="text-3xl font-black text-[#5b3f8c] mb-1 tracking-tight">
-              Pslyther
+              VibeBuddy
             </h1>
             <p className="text-sm font-medium text-[#8e7dbe]">
               Your AI-powered focus companion
@@ -146,7 +146,7 @@ export function AuthPage() {
 
         {/* Footer note */}
         <p className="text-center text-[11px] text-[#b0a0cc] mt-4 font-medium">
-          By continuing you agree to Pslyther's Privacy Policy
+          By continuing you agree to VibeBuddy's Privacy Policy
         </p>
       </motion.div>
     </div>
