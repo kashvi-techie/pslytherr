@@ -13,9 +13,7 @@ interface Notification {
 
 const notificationPool: Omit<Notification, 'id'>[] = [
   { text: 'Time for a water break!', icon: '💧', type: 'hydration' },
-  { text: "You've typed 13K+ keystrokes today!", icon: '🔥', type: 'achievement' },
   { text: 'Deep breath — you have got this!', icon: '🌿', type: 'reminder' },
-  { text: 'You unlocked Focus Master badge!', icon: '🏆', type: 'achievement' },
   { text: 'Stretch your neck for 30 seconds!', icon: '🧘', type: 'reminder' },
 ];
 
@@ -53,7 +51,7 @@ export function FloatingNotifications({ stats }: FloatingNotificationsProps) {
       const n: Notification = {
         id: Date.now(),
         text: `Typing intensely! ${character.name} says take a breath!`,
-        icon: character.emoji,
+        icon: character.name[0],
         type: 'stress',
       };
       setNotifications(prev => {

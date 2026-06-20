@@ -5,6 +5,7 @@ import { useCharacter } from '../context/CharacterContext';
 import type { ActivityStats } from '../hooks/useActivityTracker';
 import { CompanionChatPanel } from './CompanionChatPanel';
 import { CharacterSticker } from './CharacterSticker';
+import type { CompanionState } from './CompanionCard';
 
 interface FloatingCompanionProps {
   stats: ActivityStats;
@@ -16,6 +17,13 @@ const menuItems = [
   { icon: BarChart2,     key: 'analytics', label: () => 'See Analytics' },
   { icon: X,             key: 'quit',      label: () => 'Quit Companion' },
 ];
+
+function getFloatingState(stats: ActivityStats): CompanionState {
+  if (stats.isTyping && stats.typingIntensity === 'intense') return 'focus';
+  if (stats.isTyping) return 'focus';
+  if (stats.mood === 'stressed') return 'sad';
+  return 'idle';
+}
 
 export function FloatingCompanion({ stats, onOpenAnalytics }: FloatingCompanionProps) {
   const { character } = useCharacter();
@@ -31,6 +39,7 @@ export function FloatingCompanion({ stats, onOpenAnalytics }: FloatingCompanionP
   const dragOffset = useRef({ x: 0, y: 0 });
   const phraseIdx = useRef(0);
   const STICKER_SIZE = 170;
+  const companionState = getFloatingState(stats);
 
   // Mouse angle tracking for eye direction
   useEffect(() => {
@@ -184,9 +193,10 @@ export function FloatingCompanion({ stats, onOpenAnalytics }: FloatingCompanionP
                 <div style={{
                   width: 34, height: 34, borderRadius: 12, overflow: 'hidden', flexShrink: 0,
                   background: `linear-gradient(135deg, ${character.accentFrom}55, ${character.accentTo}55)`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 800,
+                  color: character.accentText,
                 }}>
-                  {character.emoji}
+                  {character.name[0]}
                 </div>
                 <div>
                   <p style={{ margin: 0, fontSize: 13, fontWeight: 800, color: character.textPrimary }}>
@@ -298,6 +308,7 @@ export function FloatingCompanion({ stats, onOpenAnalytics }: FloatingCompanionP
               size={STICKER_SIZE}
               mouseAngle={mouseAngle}
               isTyping={stats.isTyping}
+              state={companionState}
             />
           </motion.div>
 

@@ -12,18 +12,18 @@ export interface ActivityStats {
 
 export function useActivityTracker() {
   const [stats, setStats] = useState<ActivityStats>({
-    keystrokes: 12400,
-    mouseMoves: 3200,
-    focusScore: 84,
+    keystrokes: 0,
+    mouseMoves: 0,
+    focusScore: 0,
     isTyping: false,
     typingIntensity: 'idle',
     mood: 'happy',
-    sessionMinutes: 47,
+    sessionMinutes: 0,
   });
 
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const keystrokeBuffer = useRef<number[]>([]);
-  const sessionStart = useRef(Date.now() - 47 * 60 * 1000);
+  const sessionStart = useRef(Date.now());
 
   const updateMood = useCallback((intensity: ActivityStats['typingIntensity']): ActivityStats['mood'] => {
     if (intensity === 'intense') return 'stressed';
@@ -68,11 +68,16 @@ export function useActivityTracker() {
     };
   }, [handleKeyDown, handleMouseMove]);
 
+  // Update session timer every minute and compute focus score from recent activity
   useEffect(() => {
     const interval = setInterval(() => {
+      const recentKeys = keystrokeBuffer.current.length;
+      // Focus score: 0-100 based on sustained typing activity in last 5s window
+      const computedFocus = Math.min(100, Math.round(recentKeys * 2.5));
       setStats(prev => ({
         ...prev,
         sessionMinutes: Math.floor((Date.now() - sessionStart.current) / 60000),
+        focusScore: computedFocus,
       }));
     }, 60000);
     return () => clearInterval(interval);

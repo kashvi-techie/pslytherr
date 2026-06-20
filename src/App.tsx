@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CharacterProvider, useCharacter, type CharacterId } from './context/CharacterContext';
 import { Dashboard } from './components/Dashboard';

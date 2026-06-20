@@ -31,7 +31,9 @@ export function AIChatBuddy({ stats }: AIChatBuddyProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: `${character.emoji} ${character.chatOpener} You've worked ${stats.sessionMinutes} mins with ${stats.keystrokes.toLocaleString()} keystrokes. ${character.name} is here for you!`,
+      text: stats.sessionMinutes > 0
+        ? `${character.chatOpener} You've worked ${stats.sessionMinutes} mins with ${stats.keystrokes.toLocaleString()} keystrokes.`
+        : `${character.chatOpener} Start a focus session and I'll track your progress!`,
       sender: 'buddy',
     },
   ]);
@@ -43,7 +45,7 @@ export function AIChatBuddy({ stats }: AIChatBuddyProps) {
   useEffect(() => {
     setMessages([{
       id: Date.now(),
-      text: `${character.emoji} ${character.chatOpener} You've worked ${stats.sessionMinutes} mins today. ${character.name} has your back!`,
+      text: `${character.chatOpener} You've worked ${stats.sessionMinutes} mins today. ${character.name} has your back!`,
       sender: 'buddy',
     }]);
   }, [character.id]);
@@ -70,7 +72,7 @@ export function AIChatBuddy({ stats }: AIChatBuddyProps) {
         .replace('{focus}', String(stats.focusScore))
         .replace('{character}', character.name);
 
-      setMessages(prev => [...prev, { id: Date.now() + 1, text: `${character.emoji} ${reply}`, sender: 'buddy' }]);
+      setMessages(prev => [...prev, { id: Date.now() + 1, text: reply, sender: 'buddy' }]);
       setIsBuddyTyping(false);
     }, 1000 + Math.random() * 700);
   };
@@ -92,7 +94,10 @@ export function AIChatBuddy({ stats }: AIChatBuddyProps) {
         <p className="font-bold text-sm" style={{ color: character.textPrimary }}>
           AI Buddy Says
         </p>
-        <span className="text-sm">{character.emoji}</span>
+        <span className="w-5 h-5 rounded-lg flex items-center justify-center text-[9px] font-bold"
+          style={{ background: `linear-gradient(135deg, ${character.accentFrom}44, ${character.accentTo}44)`, color: character.textSecondary }}>
+          {character.name[0]}
+        </span>
       </div>
 
       {/* Messages */}
@@ -107,9 +112,9 @@ export function AIChatBuddy({ stats }: AIChatBuddyProps) {
               className={`flex gap-2 ${msg.sender === 'user' ? 'flex-row-reverse' : ''}`}
             >
               {msg.sender === 'buddy' && (
-                <div className="w-7 h-7 rounded-xl flex items-center justify-center text-base flex-shrink-0 self-end"
-                  style={{ background: `linear-gradient(135deg, ${character.accentFrom}55, ${character.accentTo}55)` }}>
-                  {character.emoji}
+                <div className="w-7 h-7 rounded-xl flex items-center justify-center text-[10px] font-bold flex-shrink-0 self-end"
+                  style={{ background: `linear-gradient(135deg, ${character.accentFrom}55, ${character.accentTo}55)`, color: character.accentText }}>
+                  {character.name[0]}
                 </div>
               )}
               <div
@@ -135,9 +140,9 @@ export function AIChatBuddy({ stats }: AIChatBuddyProps) {
               exit={{ opacity: 0 }}
               className="flex gap-2 items-end"
             >
-              <div className="w-7 h-7 rounded-xl flex items-center justify-center text-base"
-                style={{ background: `linear-gradient(135deg, ${character.accentFrom}55, ${character.accentTo}55)` }}>
-                {character.emoji}
+              <div className="w-7 h-7 rounded-xl flex items-center justify-center text-[10px] font-bold"
+                style={{ background: `linear-gradient(135deg, ${character.accentFrom}55, ${character.accentTo}55)`, color: character.accentText }}>
+                {character.name[0]}
               </div>
               <div className="px-4 py-3 rounded-2xl rounded-bl-sm flex gap-1"
                 style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.85)', border: `1px solid ${character.accentBorder}` }}>

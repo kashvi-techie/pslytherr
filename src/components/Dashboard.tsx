@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, LogOut, ChevronDown, Trophy, Flame } from 'lucide-react';
-import { AvatarPlayground } from './AvatarPlayground';
+import { CompanionCard } from './CompanionCard';
 import { MoodAnalytics } from './MoodAnalytics';
 import { AIChatBuddy } from './AIChatBuddy';
 import { ActivityTimeline } from './ActivityTimeline';
@@ -14,6 +14,8 @@ import { useActivityTracker } from '../hooks/useActivityTracker';
 import { useCharacter } from '../context/CharacterContext';
 import { useAuth } from '../context/AuthContext';
 import { useFocusPersistence } from '../hooks/useFocusPersistence';
+import { useStreakData } from '../hooks/useStreakData';
+import { useFocusSessions, useMoodStats } from '../hooks/useSupabaseData';
 
 export function Dashboard() {
   const stats = useActivityTracker();
@@ -24,10 +26,16 @@ export function Dashboard() {
   // Persist sessions + mood to Supabase
   useFocusPersistence(user?.id, stats);
 
+  // Fetch real data from Supabase
+  const { streak } = useStreakData(user?.id);
+  const { sessions } = useFocusSessions(user?.id);
+  const { moodStats } = useMoodStats(user?.id);
+
   const isDark = character.mode === 'dark';
   const displayName = profile?.display_name ?? user?.email?.split('@')[0] ?? 'Learner';
   const avatarUrl = profile?.avatar_url;
   const coins = profile?.coins ?? 0;
+  const currentStreak = streak?.current_streak ?? 0;
 
   return (
     <div className="flex-1 flex flex-col h-screen overflow-hidden">
@@ -58,7 +66,7 @@ export function Dashboard() {
                 animate={{ rotate: [0, 20, -10, 20, 0] }}
                 transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 3 }}
               >
-                {displayName.split(' ')[0]}! 👋
+                {displayName.split(' ')[0]}!
               </motion.span>
             </h1>
             <p className="text-xs font-medium hidden sm:block" style={{ color: character.textSecondary }}>
@@ -79,7 +87,7 @@ export function Dashboard() {
             style={{ background: character.accentBg, border: `1px solid ${character.accentBorder}` }}>
             <Flame size={14} style={{ color: '#f97316' }} />
             <span className="text-xs font-bold" style={{ color: character.textPrimary }}>
-              {stats.sessionMinutes > 0 ? Math.ceil(stats.sessionMinutes / 60) : 0}d
+              {currentStreak}d
             </span>
           </div>
 
@@ -99,8 +107,6 @@ export function Dashboard() {
             style={{ background: character.cardBg, border: `1px solid ${character.cardBorder}` }}
           >
             <Bell size={16} style={{ color: character.textSecondary }} />
-            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-[9px] font-bold text-white flex items-center justify-center"
-              style={{ background: character.accentFrom }}>3</span>
           </motion.button>
 
           {/* User avatar + menu */}
@@ -184,19 +190,19 @@ export function Dashboard() {
           {/* Responsive grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
 
-            {/* Avatar playground — full width on mobile, 2 cols on md */}
-            <div className="md:col-span-2 xl:col-span-2" style={{ minHeight: 280, height: 'clamp(280px, 30vw, 360px)' }}>
-              <AvatarPlayground stats={stats} />
+            {/* Companion Card — center of the experience, full width on mobile, 2 cols on md */}
+            <div className="md:col-span-2 xl:col-span-2" style={{ minHeight: 320, height: 'clamp(320px, 34vw, 400px)' }}>
+              <CompanionCard stats={stats} displayName={displayName} streak={currentStreak} sessions={sessions} />
             </div>
 
             {/* Mood analytics — right column */}
             <div className="md:col-span-1">
-              <MoodAnalytics stats={stats} />
+              <MoodAnalytics stats={stats} moodStats={moodStats} />
             </div>
 
             {/* Activity timeline */}
             <div className="md:col-span-1">
-              <ActivityTimeline stats={stats} />
+              <ActivityTimeline sessions={sessions} />
             </div>
 
             {/* Character picker */}
@@ -211,17 +217,17 @@ export function Dashboard() {
 
             {/* Emotional heatmap — full width on small, 2 cols on md */}
             <div className="md:col-span-2 xl:col-span-2">
-              <EmotionalHeatmap />
+              <EmotionalHeatmap moodStats={moodStats} />
             </div>
 
             {/* Stats summary bar */}
             <div className="md:col-span-2 xl:col-span-3">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
-                  { label: 'Keystrokes', value: stats.keystrokes.toLocaleString(), icon: '⌨️' },
-                  { label: 'Mouse moves', value: `${(stats.mouseMoves / 1000).toFixed(1)}K`, icon: '🖱️' },
-                  { label: 'Focus score', value: `${stats.focusScore}%`, icon: '🎯' },
-                  { label: 'Session', value: `${stats.sessionMinutes}m`, icon: '⏱️' },
+                  { label: 'Keystrokes', value: stats.keystrokes.toLocaleString(), icon: 'kbd' },
+                  { label: 'Mouse moves', value: `${(stats.mouseMoves / 1000).toFixed(1)}K`, icon: 'mouse' },
+                  { label: 'Focus score', value: `${stats.focusScore}%`, icon: 'focus' },
+                  { label: 'Session', value: `${stats.sessionMinutes}m`, icon: 'timer' },
                 ].map(item => (
                   <motion.div
                     key={item.label}
@@ -234,7 +240,12 @@ export function Dashboard() {
                       backdropFilter: 'blur(16px)',
                     }}
                   >
-                    <span className="text-2xl">{item.icon}</span>
+                    <span className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: `${character.accentFrom}22` }}>
+                      {item.icon === 'kbd' && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={character.accentFrom} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M8 16h8"/></svg>}
+                      {item.icon === 'mouse' && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={character.accentFrom} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="3" width="12" height="18" rx="6"/><line x1="12" y1="7" x2="12" y2="11"/></svg>}
+                      {item.icon === 'focus' && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={character.accentFrom} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>}
+                      {item.icon === 'timer' && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={character.accentFrom} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/><path d="M12 2v2"/></svg>}
+                    </span>
                     <div>
                       <p className="text-lg font-black" style={{ color: character.textPrimary }}>
                         {item.value}
@@ -261,7 +272,6 @@ export function Dashboard() {
         }}
       >
         <div className="flex items-center gap-2">
-          <span>{character.emoji}</span>
           <span className="font-bold" style={{ color: character.textPrimary }}>Pslyther AI</span>
         </div>
 

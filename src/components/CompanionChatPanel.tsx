@@ -28,24 +28,24 @@ function generateResponse(character: ReturnType<typeof useCharacter>['character'
   let linkUrl = '';
 
   if (lower.includes('break') || lower.includes('rest') || lower.includes('tired')) {
-    text = `${character.emoji} Absolutely! You've been working for ${stats.sessionMinutes} minutes. A 5-minute break will recharge you. Step away, stretch, drink water. I'll be right here!`;
+    text = `Absolutely! You've been working for ${stats.sessionMinutes} minutes. A 5-minute break will recharge you. Step away, stretch, drink water. I'll be right here!`;
   } else if (lower.includes('how am i') || lower.includes('stats') || lower.includes('progress') || lower.includes('data')) {
-    text = `${character.emoji} Your session stats look ${stats.focusScore > 75 ? 'incredible' : 'solid'}! Focus score: ${stats.focusScore}%, keystrokes: ${stats.keystrokes.toLocaleString()}, session time: ${stats.sessionMinutes} mins. You're ${stats.mood === 'focused' ? 'in deep flow state!' : 'doing great!'}`;
+    text = `Your session stats look ${stats.focusScore > 75 ? 'incredible' : 'solid'}! Focus score: ${stats.focusScore}%, keystrokes: ${stats.keystrokes.toLocaleString()}, session time: ${stats.sessionMinutes} mins. You're ${stats.mood === 'focused' ? 'in deep flow state!' : 'doing great!'}`;
   } else if (lower.includes('stress') || lower.includes('anxiety') || lower.includes('pressure')) {
-    text = `${character.emoji} I sense some stress! ${name === 'Piggy' ? 'Oink oink, deep breath!' : name === 'Spidey' ? 'Even Spider-Man takes a moment!' : 'Even Batman meditates.'} Try 4-7-8 breathing: inhale 4s, hold 7s, exhale 8s. You've got this!`;
+    text = `I sense some stress! ${name === 'Piggy' ? 'Deep breath!' : name === 'Spidey' ? 'Even Spider-Man takes a moment!' : 'Even Batman meditates.'} Try 4-7-8 breathing: inhale 4s, hold 7s, exhale 8s. You've got this!`;
   } else if (lower.includes('motivation') || lower.includes('give up') || lower.includes('cant') || lower.includes("can't")) {
-    text = `${character.emoji} ${character.hoverPhrases[0]} You've already put in ${stats.sessionMinutes} minutes of real work today. That's not nothing — that's everything. Keep going!`;
+    text = `${character.hoverPhrases[0]} You've already put in ${stats.sessionMinutes} minutes of real work today. That's not nothing — that's everything. Keep going!`;
   } else if (lower.includes('water') || lower.includes('drink') || lower.includes('hydrat')) {
-    text = `${character.emoji} YES! Hydration is productivity fuel! Drink a full glass right now. Your brain is 75% water — keep it topped up!`;
+    text = `YES! Hydration is productivity fuel! Drink a full glass right now. Your brain is 75% water — keep it topped up!`;
   } else if (lower.includes('hello') || lower.includes('hi') || lower.includes('hey')) {
-    text = `${character.emoji} ${character.chatOpener} I'm always watching over your session. What do you need?`;
+    text = `${character.chatOpener} I'm always watching over your session. What do you need?`;
   } else {
     // Simulate web search suggestion
     const query = encodeURIComponent(userMsg);
     isLink = true;
     linkText = `Search "${userMsg.slice(0, 30)}..."`;
     linkUrl = `https://www.google.com/search?q=${query}`;
-    text = `${character.emoji} Great question! I've found some resources for you. Also — you've been focused for ${stats.sessionMinutes} mins today, so your brain is sharp enough to tackle this!`;
+    text = `Great question! I've found some resources for you. Also — you've been focused for ${stats.sessionMinutes} mins today, so your brain is sharp enough to tackle this!`;
   }
 
   return { id: Date.now() + 1, text, sender: 'character', isLink, linkText, linkUrl };
@@ -125,9 +125,9 @@ export function CompanionChatPanel({ stats, onClose, position }: CompanionChatPa
           width: 36, height: 36, borderRadius: 12,
           background: `linear-gradient(135deg, ${character.accentFrom}, ${character.accentTo})`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 20, flexShrink: 0,
+          fontSize: 16, fontWeight: 800, color: character.accentText, flexShrink: 0,
         }}>
-          {character.emoji}
+          {character.name[0]}
         </div>
         <div style={{ flex: 1 }}>
           <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: character.textPrimary }}>
@@ -157,9 +157,10 @@ export function CompanionChatPanel({ stats, onClose, position }: CompanionChatPa
               <div style={{
                 width: 28, height: 28, borderRadius: 10, flexShrink: 0, alignSelf: 'flex-end',
                 background: `linear-gradient(135deg, ${character.accentFrom}, ${character.accentTo})`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800,
+                color: character.accentText,
               }}>
-                {character.emoji}
+                {character.name[0]}
               </div>
             )}
             <div style={{
@@ -201,9 +202,10 @@ export function CompanionChatPanel({ stats, onClose, position }: CompanionChatPa
             <div style={{
               width: 28, height: 28, borderRadius: 10, flexShrink: 0,
               background: `linear-gradient(135deg, ${character.accentFrom}, ${character.accentTo})`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800,
+              color: character.accentText,
             }}>
-              {character.emoji}
+              {character.name[0]}
             </div>
             <div style={{
               background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.85)',

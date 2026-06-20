@@ -1,10 +1,12 @@
 import { type CSSProperties } from 'react';
+import type { CompanionState } from './CompanionCard';
 
 interface CharacterStickerProps {
   characterId: string;
   size?: number;
   mouseAngle?: number;
   isTyping?: boolean;
+  state?: CompanionState;
   style?: CSSProperties;
 }
 
@@ -95,7 +97,7 @@ function Laptop({ isTyping = false }: { isTyping?: boolean }) {
 
 // ─── CHARACTER BODIES ────────────────────────────────────────────────────────
 
-function PiggyBody({ isTyping }: { isTyping: boolean }) {
+function PiggyBody({ isTyping: _isTyping }: { isTyping: boolean }) {
   return (
     <g>
       <ellipse cx="142" cy="158" rx="42" ry="30" fill="#f4a8c0" />
@@ -112,7 +114,7 @@ function PiggyBody({ isTyping }: { isTyping: boolean }) {
   );
 }
 
-function SpideyBody({ isTyping }: { isTyping: boolean }) {
+function SpideyBody({ isTyping: _isTyping }: { isTyping: boolean }) {
   return (
     <g>
       <ellipse cx="142" cy="158" rx="42" ry="28" fill="#cc1111" />
@@ -136,7 +138,7 @@ function SpideyBody({ isTyping }: { isTyping: boolean }) {
   );
 }
 
-function BatmanBody({ isTyping }: { isTyping: boolean }) {
+function BatmanBody({ isTyping: _isTyping }: { isTyping: boolean }) {
   return (
     <g>
       <path d="M 100 140 Q 88 130 85 155 Q 84 175 90 185 Q 98 195 108 175 Z" fill="#1a1a0a" />
@@ -156,7 +158,7 @@ function BatmanBody({ isTyping }: { isTyping: boolean }) {
   );
 }
 
-function CatBody({ isTyping }: { isTyping: boolean }) {
+function CatBody({ isTyping: _isTyping }: { isTyping: boolean }) {
   return (
     <g>
       <ellipse cx="142" cy="158" rx="40" ry="27" fill="#93c5fd" />
@@ -171,7 +173,7 @@ function CatBody({ isTyping }: { isTyping: boolean }) {
   );
 }
 
-function BunnyBody({ isTyping }: { isTyping: boolean }) {
+function BunnyBody({ isTyping: _isTyping }: { isTyping: boolean }) {
   return (
     <g>
       <ellipse cx="142" cy="158" rx="40" ry="27" fill="#c4b5fd" />
@@ -186,7 +188,7 @@ function BunnyBody({ isTyping }: { isTyping: boolean }) {
   );
 }
 
-function DinoBody({ isTyping }: { isTyping: boolean }) {
+function DinoBody({ isTyping: _isTyping }: { isTyping: boolean }) {
   return (
     <g>
       <ellipse cx="142" cy="158" rx="40" ry="27" fill="#4ade80" />
@@ -201,7 +203,7 @@ function DinoBody({ isTyping }: { isTyping: boolean }) {
   );
 }
 
-function PuppyBody({ isTyping }: { isTyping: boolean }) {
+function PuppyBody({ isTyping: _isTyping }: { isTyping: boolean }) {
   return (
     <g>
       <ellipse cx="142" cy="158" rx="40" ry="27" fill="#fbbf24" />
@@ -216,7 +218,7 @@ function PuppyBody({ isTyping }: { isTyping: boolean }) {
   );
 }
 
-function BearBody({ isTyping }: { isTyping: boolean }) {
+function BearBody({ isTyping: _isTyping }: { isTyping: boolean }) {
   return (
     <g>
       <ellipse cx="142" cy="158" rx="40" ry="27" fill="#d97706" />
@@ -237,10 +239,14 @@ function BearBody({ isTyping }: { isTyping: boolean }) {
 interface HeadProps {
   mouseAngle: number;
   isTyping: boolean;
+  state?: CompanionState;
 }
 
-function PiggyHead({ mouseAngle, isTyping }: HeadProps) {
+function PiggyHead({ mouseAngle, isTyping, state = 'idle' }: HeadProps) {
   const { dx, dy } = pupilOffset(mouseAngle, 4);
+  const isSleeping = state === 'sleep';
+  const isSad = state === 'sad';
+  const isHappy = state === 'happy' || state === 'levelUp';
   return (
     <g>
       <ellipse cx="76" cy="38" rx="16" ry="20" fill="#f4a8c0" />
@@ -255,30 +261,50 @@ function PiggyHead({ mouseAngle, isTyping }: HeadProps) {
       <ellipse cx="132" cy="68" rx="14" ry="16" fill="white" />
       <ellipse cx="94" cy="68" rx="14" ry="16" fill="none" stroke="#d4849e" strokeWidth="1.5" />
       <ellipse cx="132" cy="68" rx="14" ry="16" fill="none" stroke="#d4849e" strokeWidth="1.5" />
-      {/* Pupils */}
-      <circle cx={94 + dx} cy={68 + dy} r="6" fill="#2d1a1a" />
-      <circle cx={132 + dx} cy={68 + dy} r="6" fill="#2d1a1a" />
-      {/* Eye shine */}
-      <circle cx={90 + dx * 0.3} cy={63 + dy * 0.3} r="3" fill="white" opacity="0.9" />
-      <circle cx={128 + dx * 0.3} cy={63 + dy * 0.3} r="3" fill="white" opacity="0.9" />
-      <circle cx={96 + dx * 0.3} cy={72 + dy * 0.3} r="1.5" fill="white" opacity="0.7" />
-      <circle cx={134 + dx * 0.3} cy={72 + dy * 0.3} r="1.5" fill="white" opacity="0.7" />
-      {/* Blink eyelids — animated via CSS class */}
-      <ellipse className="blink-lid" cx="94" cy="68" rx="14" ry="0" fill="#f7c5d5" />
-      <ellipse className="blink-lid" cx="132" cy="68" rx="14" ry="0" fill="#f7c5d5" />
+      {/* Pupils — half-closed when sleeping */}
+      {isSleeping ? (
+        <>
+          <line x1="82" y1="68" x2="106" y2="68" stroke="#2d1a1a" strokeWidth="2.5" strokeLinecap="round" />
+          <line x1="120" y1="68" x2="144" y2="68" stroke="#2d1a1a" strokeWidth="2.5" strokeLinecap="round" />
+        </>
+      ) : (
+        <>
+          <circle cx={94 + dx} cy={68 + dy} r="6" fill="#2d1a1a" />
+          <circle cx={132 + dx} cy={68 + dy} r="6" fill="#2d1a1a" />
+          <circle cx={90 + dx * 0.3} cy={63 + dy * 0.3} r="3" fill="white" opacity="0.9" />
+          <circle cx={128 + dx * 0.3} cy={63 + dy * 0.3} r="3" fill="white" opacity="0.9" />
+          <circle cx={96 + dx * 0.3} cy={72 + dy * 0.3} r="1.5" fill="white" opacity="0.7" />
+          <circle cx={134 + dx * 0.3} cy={72 + dy * 0.3} r="1.5" fill="white" opacity="0.7" />
+        </>
+      )}
+      {/* Blink eyelids */}
+      {!isSleeping && (
+        <>
+          <ellipse className="blink-lid" cx="94" cy="68" rx="14" ry="0" fill="#f7c5d5" />
+          <ellipse className="blink-lid" cx="132" cy="68" rx="14" ry="0" fill="#f7c5d5" />
+        </>
+      )}
       {/* Snout */}
       <ellipse cx="113" cy="90" rx="16" ry="12" fill="#f9b8cc" />
       <circle cx="107" cy="90" r="4" fill="#e896b2" />
       <circle cx="119" cy="90" r="4" fill="#e896b2" />
-      <path d="M 106 100 Q 113 106 120 100" fill="none" stroke="#d080a0" strokeWidth="2" strokeLinecap="round" />
-      {isTyping && <circle cx="88" cy="60" r="2" fill="white" opacity="0.9" />}
-      {isTyping && <circle cx="126" cy="60" r="2" fill="white" opacity="0.9" />}
+      {/* Mouth — state-based */}
+      {isSad ? (
+        <path d="M 106 104 Q 113 98 120 104" fill="none" stroke="#d080a0" strokeWidth="2" strokeLinecap="round" />
+      ) : isHappy ? (
+        <path d="M 102 100 Q 113 112 124 100" fill="none" stroke="#d080a0" strokeWidth="2.5" strokeLinecap="round" />
+      ) : (
+        <path d="M 106 100 Q 113 106 120 100" fill="none" stroke="#d080a0" strokeWidth="2" strokeLinecap="round" />
+      )}
+      {isTyping && !isSleeping && <circle cx="88" cy="60" r="2" fill="white" opacity="0.9" />}
+      {isTyping && !isSleeping && <circle cx="126" cy="60" r="2" fill="white" opacity="0.9" />}
     </g>
   );
 }
 
-function SpideyHead({ mouseAngle, isTyping }: HeadProps) {
+function SpideyHead({ mouseAngle, isTyping, state = 'idle' }: HeadProps) {
   const { dx, dy } = pupilOffset(mouseAngle, 5);
+  const isSleeping = state === 'sleep';
   const leftEyeCenter = { x: 91, y: 66 };
   const rightEyeCenter = { x: 135, y: 66 };
   return (
@@ -300,20 +326,29 @@ function SpideyHead({ mouseAngle, isTyping }: HeadProps) {
       <ellipse cx={leftEyeCenter.x} cy={leftEyeCenter.y} rx="20" ry="15" fill="none" stroke="#1a0000" strokeWidth="2" transform={`rotate(-18 ${leftEyeCenter.x} ${leftEyeCenter.y})`} />
       <ellipse cx={rightEyeCenter.x} cy={rightEyeCenter.y} rx="20" ry="15" fill="white" transform={`rotate(18 ${rightEyeCenter.x} ${rightEyeCenter.y})`} />
       <ellipse cx={rightEyeCenter.x} cy={rightEyeCenter.y} rx="20" ry="15" fill="none" stroke="#1a0000" strokeWidth="2" transform={`rotate(18 ${rightEyeCenter.x} ${rightEyeCenter.y})`} />
-      <ellipse
-        cx={leftEyeCenter.x + dx * 0.7}
-        cy={leftEyeCenter.y + dy * 0.7}
-        rx="10" ry="9"
-        fill={isTyping ? "#220000" : "#111"}
-        transform={`rotate(-18 ${leftEyeCenter.x + dx * 0.7} ${leftEyeCenter.y + dy * 0.7})`}
-      />
-      <ellipse
-        cx={rightEyeCenter.x + dx * 0.7}
-        cy={rightEyeCenter.y + dy * 0.7}
-        rx="10" ry="9"
-        fill={isTyping ? "#220000" : "#111"}
-        transform={`rotate(18 ${rightEyeCenter.x + dx * 0.7} ${rightEyeCenter.y + dy * 0.7})`}
-      />
+      {isSleeping ? (
+        <>
+          <line x1="80" y1="66" x2="102" y2="66" stroke="#111" strokeWidth="2.5" strokeLinecap="round" transform="rotate(-18 91 66)" />
+          <line x1="124" y1="66" x2="146" y2="66" stroke="#111" strokeWidth="2.5" strokeLinecap="round" transform="rotate(18 135 66)" />
+        </>
+      ) : (
+        <>
+          <ellipse
+            cx={leftEyeCenter.x + dx * 0.7}
+            cy={leftEyeCenter.y + dy * 0.7}
+            rx="10" ry="9"
+            fill={isTyping ? "#220000" : "#111"}
+            transform={`rotate(-18 ${leftEyeCenter.x + dx * 0.7} ${leftEyeCenter.y + dy * 0.7})`}
+          />
+          <ellipse
+            cx={rightEyeCenter.x + dx * 0.7}
+            cy={rightEyeCenter.y + dy * 0.7}
+            rx="10" ry="9"
+            fill={isTyping ? "#220000" : "#111"}
+            transform={`rotate(18 ${rightEyeCenter.x + dx * 0.7} ${rightEyeCenter.y + dy * 0.7})`}
+          />
+        </>
+      )}
       <ellipse cx={83 + dx * 0.2} cy={59 + dy * 0.2} rx="7" ry="5" fill="rgba(255,255,255,0.35)" transform="rotate(-15 83 59)" />
       <ellipse cx={127 + dx * 0.2} cy={59 + dy * 0.2} rx="7" ry="5" fill="rgba(255,255,255,0.35)" transform="rotate(15 127 59)" />
       {/* Blink — squint the white lenses */}
@@ -323,7 +358,7 @@ function SpideyHead({ mouseAngle, isTyping }: HeadProps) {
   );
 }
 
-function BatmanHead({ mouseAngle, isTyping }: HeadProps) {
+function BatmanHead({ mouseAngle, isTyping: _isTyping, state: _state = 'idle' }: HeadProps) {
   const { dx, dy } = pupilOffset(mouseAngle, 4);
   return (
     <g>
@@ -349,7 +384,7 @@ function BatmanHead({ mouseAngle, isTyping }: HeadProps) {
   );
 }
 
-function CatHead({ mouseAngle, isTyping }: HeadProps) {
+function CatHead({ mouseAngle, isTyping: _isTyping, state: _state = 'idle' }: HeadProps) {
   const { dx, dy } = pupilOffset(mouseAngle, 4);
   return (
     <g>
@@ -378,7 +413,7 @@ function CatHead({ mouseAngle, isTyping }: HeadProps) {
   );
 }
 
-function BunnyHead({ mouseAngle, isTyping }: HeadProps) {
+function BunnyHead({ mouseAngle, isTyping: _isTyping, state: _state = 'idle' }: HeadProps) {
   const { dx, dy } = pupilOffset(mouseAngle, 4);
   return (
     <g>
@@ -403,7 +438,7 @@ function BunnyHead({ mouseAngle, isTyping }: HeadProps) {
   );
 }
 
-function DinoHead({ mouseAngle, isTyping }: HeadProps) {
+function DinoHead({ mouseAngle, isTyping: _isTyping, state: _state = 'idle' }: HeadProps) {
   const { dx, dy } = pupilOffset(mouseAngle, 4);
   return (
     <g>
@@ -429,7 +464,7 @@ function DinoHead({ mouseAngle, isTyping }: HeadProps) {
   );
 }
 
-function PuppyHead({ mouseAngle, isTyping }: HeadProps) {
+function PuppyHead({ mouseAngle, isTyping: _isTyping, state: _state = 'idle' }: HeadProps) {
   const { dx, dy } = pupilOffset(mouseAngle, 4);
   return (
     <g>
@@ -453,7 +488,7 @@ function PuppyHead({ mouseAngle, isTyping }: HeadProps) {
   );
 }
 
-function BearHead({ mouseAngle, isTyping }: HeadProps) {
+function BearHead({ mouseAngle, isTyping: _isTyping, state: _state = 'idle' }: HeadProps) {
   const { dx, dy } = pupilOffset(mouseAngle, 4);
   return (
     <g>
@@ -507,6 +542,7 @@ export function CharacterSticker({
   size = 180,
   mouseAngle = 0,
   isTyping = false,
+  state = 'idle',
   style,
 }: CharacterStickerProps) {
   const BodyComp = bodyMap[characterId] || bodyMap.piggy;
@@ -546,7 +582,7 @@ export function CharacterSticker({
         <GamingChair />
         <BodyComp isTyping={isTyping} />
         <Laptop isTyping={isTyping} />
-        <HeadComp mouseAngle={mouseAngle} isTyping={isTyping} />
+        <HeadComp mouseAngle={mouseAngle} isTyping={isTyping} state={state} />
       </g>
     </svg>
   );

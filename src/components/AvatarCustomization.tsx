@@ -33,7 +33,10 @@ export function AvatarCustomization() {
           border: `1px solid ${character.accentBorder}`,
         }}
       >
-        <span style={{ fontSize: 28 }}>{character.emoji}</span>
+        <span className="w-7 h-7 rounded-xl flex items-center justify-center text-sm font-bold"
+          style={{ background: `linear-gradient(135deg, ${character.accentFrom}, ${character.accentTo})`, color: character.accentText }}>
+          {character.name[0]}
+        </span>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-bold" style={{ color: character.textPrimary }}>
             {character.name}
@@ -73,8 +76,8 @@ export function AvatarCustomization() {
               }}
             >
               <div className="relative w-9 h-9 rounded-xl flex items-center justify-center"
-                style={{ background: isSelected ? `${character.accentFrom}33` : 'rgba(255,255,255,0.5)', fontSize: 22 }}>
-                <span>{char.emoji}</span>
+                style={{ background: isSelected ? `${character.accentFrom}33` : 'rgba(255,255,255,0.5)', fontSize: 14, fontWeight: 800, color: isSelected ? character.textPrimary : character.textMuted }}>
+                <span>{char.name[0]}</span>
                 {isSelected && (
                   <motion.div
                     initial={{ scale: 0 }}
@@ -110,7 +113,7 @@ export function AvatarCustomization() {
           }}
         >
           <p className="text-xs font-semibold" style={{ color: character.textPrimary }}>
-            {character.emoji} {character.greeting}
+            {character.name} — {character.greeting}
           </p>
           <p className="text-[10px] mt-0.5" style={{ color: character.textMuted }}>
             {character.catchphrase}

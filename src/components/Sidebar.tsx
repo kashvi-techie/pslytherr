@@ -3,7 +3,8 @@ import {
   LayoutDashboard, Heart, Activity, BarChart2, Bell,
   Focus, Palette, Settings, ChevronRight, Sparkles,
 } from 'lucide-react';
-import { useCharacter, type CharacterId } from '../context/CharacterContext';
+import { useCharacter } from '../context/CharacterContext';
+import { useAuth } from '../context/AuthContext';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', id: 'dashboard' },
@@ -24,7 +25,10 @@ interface SidebarProps {
 
 export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
   const { character } = useCharacter();
+  const { profile, user } = useAuth();
   const isDark = character.mode === 'dark';
+  const displayName = profile?.display_name ?? user?.email?.split('@')[0] ?? 'Learner';
+  const coins = profile?.coins ?? 0;
 
   return (
     <aside
@@ -45,16 +49,16 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
           className="flex items-center gap-2.5"
         >
           <div
-            className={`w-9 h-9 rounded-2xl bg-gradient-to-br ${character.sidebarLogo} flex items-center justify-center shadow-md flex-shrink-0`}
+            className={`w-9 h-9 rounded-2xl bg-gradient-to-br ${character.sidebarLogo} flex items-center justify-center shadow-md flex-shrink-0 text-white font-black text-sm`}
           >
-            <span className="text-lg">{character.emoji}</span>
+            {character.name[0]}
           </div>
           <div>
             <p className="font-bold text-base leading-tight" style={{ color: character.textPrimary }}>
               Pslyther
             </p>
             <p className="text-[10px] font-medium" style={{ color: character.textMuted }}>
-              AI Workspace ✨
+              AI Workspace
             </p>
           </div>
         </motion.div>
@@ -66,7 +70,10 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
           className="rounded-2xl px-3 py-2 flex items-center gap-2"
           style={{ background: character.accentBg, border: `1px solid ${character.accentBorder}` }}
         >
-          <span className="text-sm">{character.emoji}</span>
+          <span className="w-5 h-5 rounded-lg flex items-center justify-center text-[10px] font-bold"
+            style={{ background: `linear-gradient(135deg, ${character.accentFrom}, ${character.accentTo})`, color: character.accentText }}>
+            {character.name[0]}
+          </span>
           <p className="text-xs font-semibold flex-1 truncate" style={{ color: character.textPrimary }}>
             {character.name}
           </p>
@@ -112,15 +119,18 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
         {/* Buddy Coins */}
         <div className="flex items-center gap-2 rounded-2xl px-3 py-2.5"
           style={{ background: character.accentBg, border: `1px solid ${character.accentBorder}` }}>
-          <div className="w-7 h-7 rounded-xl flex items-center justify-center text-sm"
+          <div className="w-7 h-7 rounded-xl flex items-center justify-center"
             style={{ background: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.8)' }}>
-            😊
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={character.accentFrom} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v12M8 10h8M8 14h8"/>
+            </svg>
           </div>
           <div className="flex-1">
             <p className="text-[10px] font-medium leading-none" style={{ color: character.textMuted }}>
               Buddy Coins
             </p>
-            <p className="text-sm font-bold" style={{ color: character.textPrimary }}>1,250</p>
+            <p className="text-sm font-bold" style={{ color: character.textPrimary }}>{coins.toLocaleString()}</p>
           </div>
           <div className="w-5 h-5 rounded-full flex items-center justify-center cursor-pointer"
             style={{ background: character.accentFrom }}>
@@ -132,13 +142,13 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
         <div className="flex items-center gap-2.5 px-1 py-1">
           <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
             style={{ background: `linear-gradient(135deg, ${character.accentFrom}, ${character.accentTo})` }}>
-            K
+            {displayName[0]?.toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-semibold truncate" style={{ color: character.textPrimary }}>
-              
+              {displayName}
             </p>
-            <p className="text-[10px]" style={{ color: character.textMuted }}>Premium User 👑</p>
+            <p className="text-[10px]" style={{ color: character.textMuted }}>Pslyther User</p>
           </div>
         </div>
 

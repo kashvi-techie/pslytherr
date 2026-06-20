@@ -5,8 +5,7 @@ import { useCharacter } from '../context/CharacterContext';
 
 export function FocusSession() {
   const { character } = useCharacter();
-  const isDark = character.mode === 'dark';
-  const [seconds, setSeconds] = useState(24 * 60 + 36);
+  const [seconds, setSeconds] = useState(0);
   const [running, setRunning] = useState(true);
 
   useEffect(() => {

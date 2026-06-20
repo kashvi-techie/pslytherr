@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 
-const floatingChars = ['🐷', '🕷️', '🦇', '🐱', '🐰', '🦕'];
+const companionInitials = ['P', 'S', 'B', 'C', 'B', 'D'];
+const companionColors = ['#f4aec0', '#dc2626', '#d97706', '#60a5fa', '#a78bfa', '#4ade80'];
 
 export function AuthPage() {
   const { signInWithGoogle, loading } = useAuth();
@@ -12,21 +13,24 @@ export function AuthPage() {
       style={{ background: 'linear-gradient(135deg, #FDF0F5 0%, #F0F4FF 50%, #EFF8F8 100%)' }}
     >
       {/* Floating background characters */}
-      {floatingChars.map((char, i) => (
+      {companionInitials.map((initial, i) => (
         <motion.div
           key={i}
-          className="absolute pointer-events-none select-none"
+          className="absolute pointer-events-none select-none rounded-full flex items-center justify-center font-black"
           style={{
-            fontSize: 40 + (i % 3) * 18,
+            fontSize: 24 + (i % 3) * 8,
             left: `${8 + i * 15}%`,
             top: `${12 + (i % 4) * 22}%`,
             opacity: 0.12,
-            filter: 'blur(1px)',
+            width: 50 + (i % 3) * 12,
+            height: 50 + (i % 3) * 12,
+            background: companionColors[i],
+            color: 'white',
           }}
           animate={{ y: [0, -18, 0], rotate: [0, 6, -6, 0] }}
           transition={{ duration: 4 + i * 0.7, repeat: Infinity, ease: 'easeInOut', delay: i * 0.5 }}
         >
-          {char}
+          {initial}
         </motion.div>
       ))}
 
@@ -58,9 +62,12 @@ export function AuthPage() {
             <motion.div
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-              className="text-6xl mb-4 inline-block"
+              className="inline-block mb-4"
             >
-              🐷
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto"
+                style={{ background: 'linear-gradient(135deg, #f4aec0, #8e7dbe)', fontSize: 28, fontWeight: 900, color: 'white' }}>
+                P
+              </div>
             </motion.div>
             <h1 className="text-3xl font-black text-[#5b3f8c] mb-1 tracking-tight">
               Pslyther
@@ -127,20 +134,21 @@ export function AuthPage() {
           </p>
 
           {/* Companion row */}
-          <div className="flex items-center justify-center gap-1.5 mt-6">
-            {floatingChars.map((c, i) => (
-              <motion.span
+          <div className="flex items-center justify-center gap-2 mt-6">
+            {companionInitials.map((initial, i) => (
+              <motion.div
                 key={i}
-                className="text-xl"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold text-white"
+                style={{ background: companionColors[i] }}
                 animate={{ y: [0, -4, 0] }}
                 transition={{ duration: 2, delay: i * 0.25, repeat: Infinity }}
               >
-                {c}
-              </motion.span>
+                {initial}
+              </motion.div>
             ))}
           </div>
           <p className="text-center text-[10px] font-medium text-[#c4b5f0] mt-2">
-            8 companions waiting for you ✨
+            8 companions waiting for you
           </p>
         </div>
 
