@@ -55,7 +55,7 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
           </div>
           <div>
             <p className="font-bold text-base leading-tight" style={{ color: character.textPrimary }}>
-              Pslyther
+              VibeBuddy
             </p>
             <p className="text-[10px] font-medium" style={{ color: character.textMuted }}>
               AI Workspace
@@ -154,7 +154,7 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
 
         <div className="text-center">
           <p className="text-[9px] font-medium" style={{ color: character.textMuted }}>
-            Pslyther v1.0.0
+            VibeBuddy v1.0.0
           </p>
         </div>
       </div>
