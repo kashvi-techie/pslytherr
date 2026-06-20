@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CharacterProvider, useCharacter, type CharacterId } from './context/CharacterContext';
 import { Dashboard } from './components/Dashboard';
 import { AuthPage } from './components/AuthPage';
+import { Onboarding } from './components/Onboarding';
+import { CharacterSticker } from './components/CharacterSticker';
 
 function LoadingScreen() {
   return (
@@ -13,20 +16,12 @@ function LoadingScreen() {
       <motion.div
         animate={{ y: [0, -12, 0], rotate: [0, 8, -8, 0] }}
         transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-        style={{ fontSize: 64, marginBottom: 20 }}
+        style={{ marginBottom: 20 }}
       >
-        <svg width="64" height="64" viewBox="0 0 200 215">
-          <circle cx="113" cy="75" r="46" fill="#f7c5d5" stroke="#e89ab0" strokeWidth="2.5" />
-          <ellipse cx="94" cy="68" rx="12" ry="14" fill="white" />
-          <ellipse cx="132" cy="68" rx="12" ry="14" fill="white" />
-          <circle cx="96" cy="68" r="5" fill="#2d1a1a" />
-          <circle cx="134" cy="68" r="5" fill="#2d1a1a" />
-          <ellipse cx="113" cy="90" rx="14" ry="10" fill="#f9b8cc" />
-          <path d="M 106 100 Q 113 106 120 100" fill="none" stroke="#d080a0" strokeWidth="2" strokeLinecap="round" />
-        </svg>
+        <CharacterSticker characterId="piggy" size={80} />
       </motion.div>
       <p className="text-sm font-semibold" style={{ color: '#8e7dbe' }}>
-        Loading VibeBuddy...
+        Loading Pslyther...
       </p>
       <div className="flex gap-1.5 mt-4">
         {[0, 1, 2].map(i => (
@@ -63,6 +58,7 @@ function ThemedApp() {
 
 function ProtectedApp() {
   const { user, profile, loading } = useAuth();
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   // Wait until auth state is resolved
   if (loading) return <LoadingScreen />;
@@ -84,6 +80,17 @@ function ProtectedApp() {
   // User is authenticated — show dashboard even if profile hasn't loaded yet.
   // Profile may be null briefly after OAuth redirect; it'll populate async.
   const companionId = (profile?.companion_id ?? 'piggy') as CharacterId;
+
+  // Check if this is a first-time user (no display name set yet)
+  const isFirstTimeUser = !profile?.display_name || profile.display_name === 'Learner';
+
+  if (isFirstTimeUser && showOnboarding) {
+    return (
+      <CharacterProvider initialCharacterId={companionId}>
+        <Onboarding onComplete={() => setShowOnboarding(false)} />
+      </CharacterProvider>
+    );
+  }
 
   return (
     <CharacterProvider initialCharacterId={companionId}>

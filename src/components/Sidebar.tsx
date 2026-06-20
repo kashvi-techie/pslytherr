@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { useCharacter } from '../context/CharacterContext';
 import { useAuth } from '../context/AuthContext';
+import { CharacterSticker } from './CharacterSticker';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', id: 'dashboard' },
@@ -48,14 +49,12 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
           animate={{ opacity: 1, y: 0 }}
           className="flex items-center gap-2.5"
         >
-          <div
-            className={`w-9 h-9 rounded-2xl bg-gradient-to-br ${character.sidebarLogo} flex items-center justify-center shadow-md flex-shrink-0 text-white font-black text-sm`}
-          >
-            {character.name[0]}
+          <div className="w-9 h-9 flex items-center justify-center flex-shrink-0">
+            <CharacterSticker characterId={character.id} size={36} />
           </div>
           <div>
             <p className="font-bold text-base leading-tight" style={{ color: character.textPrimary }}>
-              VibeBuddy
+              Pslyther
             </p>
             <p className="text-[10px] font-medium" style={{ color: character.textMuted }}>
               AI Workspace
@@ -70,10 +69,9 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
           className="rounded-2xl px-3 py-2 flex items-center gap-2"
           style={{ background: character.accentBg, border: `1px solid ${character.accentBorder}` }}
         >
-          <span className="w-5 h-5 rounded-lg flex items-center justify-center text-[10px] font-bold"
-            style={{ background: `linear-gradient(135deg, ${character.accentFrom}, ${character.accentTo})`, color: character.accentText }}>
-            {character.name[0]}
-          </span>
+          <div className="w-6 h-6 flex items-center justify-center">
+            <CharacterSticker characterId={character.id} size={24} />
+          </div>
           <p className="text-xs font-semibold flex-1 truncate" style={{ color: character.textPrimary }}>
             {character.name}
           </p>
@@ -154,7 +152,7 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
 
         <div className="text-center">
           <p className="text-[9px] font-medium" style={{ color: character.textMuted }}>
-            VibeBuddy v1.0.0
+            Pslyther v1.0.0
           </p>
         </div>
       </div>

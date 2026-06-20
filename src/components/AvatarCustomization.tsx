@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Sparkles } from 'lucide-react';
 import { useCharacter, type CharacterId } from '../context/CharacterContext';
 import { useAuth } from '../context/AuthContext';
+import { CharacterSticker } from './CharacterSticker';
 
 export function AvatarCustomization() {
   const { character, setCharacter, allCharacters } = useCharacter();
@@ -33,10 +34,9 @@ export function AvatarCustomization() {
           border: `1px solid ${character.accentBorder}`,
         }}
       >
-        <span className="w-7 h-7 rounded-xl flex items-center justify-center text-sm font-bold"
-          style={{ background: `linear-gradient(135deg, ${character.accentFrom}, ${character.accentTo})`, color: character.accentText }}>
-          {character.name[0]}
-        </span>
+        <div className="w-12 h-12 flex items-center justify-center">
+          <CharacterSticker characterId={character.id} size={48} />
+        </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-bold" style={{ color: character.textPrimary }}>
             {character.name}
@@ -75,17 +75,16 @@ export function AvatarCustomization() {
                   : character.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.5)',
               }}
             >
-              <div className="relative w-9 h-9 rounded-xl flex items-center justify-center"
-                style={{ background: isSelected ? `${character.accentFrom}33` : 'rgba(255,255,255,0.5)', fontSize: 14, fontWeight: 800, color: isSelected ? character.textPrimary : character.textMuted }}>
-                <span>{char.name[0]}</span>
+              <div className="relative w-12 h-12 flex items-center justify-center">
+                <CharacterSticker characterId={char.id} size={48} />
                 {isSelected && (
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 rounded-full flex items-center justify-center shadow-sm"
+                    className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center shadow-sm"
                     style={{ background: character.accentFrom }}
                   >
-                    <Check size={7} className="text-white" strokeWidth={3} />
+                    <Check size={8} className="text-white" strokeWidth={3} />
                   </motion.div>
                 )}
               </div>

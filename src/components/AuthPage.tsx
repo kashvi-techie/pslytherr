@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import { CharacterSticker } from './CharacterSticker';
 
-const companionInitials = ['P', 'S', 'B', 'C', 'B', 'D'];
-const companionColors = ['#f4aec0', '#dc2626', '#d97706', '#60a5fa', '#a78bfa', '#4ade80'];
+const companionIds = ['piggy', 'spidey', 'batman', 'cat', 'bunny', 'dino'];
 
 export function AuthPage() {
   const { signInWithGoogle, loading } = useAuth();
@@ -13,24 +13,19 @@ export function AuthPage() {
       style={{ background: 'linear-gradient(135deg, #FDF0F5 0%, #F0F4FF 50%, #EFF8F8 100%)' }}
     >
       {/* Floating background characters */}
-      {companionInitials.map((initial, i) => (
+      {companionIds.map((id, i) => (
         <motion.div
-          key={i}
-          className="absolute pointer-events-none select-none rounded-full flex items-center justify-center font-black"
+          key={id}
+          className="absolute pointer-events-none select-none"
           style={{
-            fontSize: 24 + (i % 3) * 8,
             left: `${8 + i * 15}%`,
             top: `${12 + (i % 4) * 22}%`,
-            opacity: 0.12,
-            width: 50 + (i % 3) * 12,
-            height: 50 + (i % 3) * 12,
-            background: companionColors[i],
-            color: 'white',
+            opacity: 0.15,
           }}
           animate={{ y: [0, -18, 0], rotate: [0, 6, -6, 0] }}
           transition={{ duration: 4 + i * 0.7, repeat: Infinity, ease: 'easeInOut', delay: i * 0.5 }}
         >
-          {initial}
+          <CharacterSticker characterId={id} size={50 + (i % 3) * 12} />
         </motion.div>
       ))}
 
@@ -64,13 +59,10 @@ export function AuthPage() {
               transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               className="inline-block mb-4"
             >
-              <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto"
-                style={{ background: 'linear-gradient(135deg, #f4aec0, #8e7dbe)', fontSize: 28, fontWeight: 900, color: 'white' }}>
-                P
-              </div>
+              <CharacterSticker characterId="piggy" size={80} />
             </motion.div>
             <h1 className="text-3xl font-black text-[#5b3f8c] mb-1 tracking-tight">
-              VibeBuddy
+              Pslyther
             </h1>
             <p className="text-sm font-medium text-[#8e7dbe]">
               Your AI-powered focus companion
@@ -134,16 +126,14 @@ export function AuthPage() {
           </p>
 
           {/* Companion row */}
-          <div className="flex items-center justify-center gap-2 mt-6">
-            {companionInitials.map((initial, i) => (
+          <div className="flex items-center justify-center gap-3 mt-6">
+            {companionIds.map((id, i) => (
               <motion.div
-                key={i}
-                className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold text-white"
-                style={{ background: companionColors[i] }}
+                key={id}
                 animate={{ y: [0, -4, 0] }}
                 transition={{ duration: 2, delay: i * 0.25, repeat: Infinity }}
               >
-                {initial}
+                <CharacterSticker characterId={id} size={32} />
               </motion.div>
             ))}
           </div>
@@ -154,7 +144,7 @@ export function AuthPage() {
 
         {/* Footer note */}
         <p className="text-center text-[11px] text-[#b0a0cc] mt-4 font-medium">
-          By continuing you agree to VibeBuddy's Privacy Policy
+          By continuing you agree to Pslyther's Privacy Policy
         </p>
       </motion.div>
     </div>
